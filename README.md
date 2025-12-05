@@ -1,6 +1,12 @@
-# Platform Chatbot
+# Mojaloop Load Tester Chatbot Backend
 
-A simple conversational chatbot for the platform built with Python.
+Backend server for the Mojaloop Load Tester Chatbot.
+
+## Features
+
+- **AI Chat**: Powered by Google Gemini 2.5 Flash (Streaming support).
+- **Audio Analysis**: Upload audio files for AI analysis.
+- **Load Testing**: Proxy CSV files to the load test engine.
 
 ## Setup
 
@@ -9,12 +15,30 @@ A simple conversational chatbot for the platform built with Python.
    pip install -r requirements.txt
    ```
 
-2. Run the chatbot:
+2. Run the server:
    ```bash
-   python main.py
+   python app.py
    ```
+   The server runs on port **5001**.
 
-## Features
+## API Endpoints
 
-- Basic keyword matching response system
-- Colored terminal output
+### `POST /chat`
+Send a message or audio file to the chatbot.
+- **Form Data**:
+    - `message`: (Text) The user's question.
+    - `file`: (File) Optional audio file (.mp3, .wav, etc.).
+- **Response**: Streaming text.
+
+### `POST /upload-csv`
+Upload a CSV file for load testing.
+- **Form Data**:
+    - `file`: (File) The CSV file.
+- **Response**: A ZIP file containing the test report.
+
+## Testing
+
+Run the included test script to verify all endpoints:
+```bash
+python test_server.py
+```
