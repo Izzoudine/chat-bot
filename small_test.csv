@@ -1,0 +1,2 @@
+transferId,payerId,payeeId,amount,montant,currency,devise,scenario,type_id,valeur_id,nom_complet
+1,27710000001,27710000002,100,100,XOF,XOF,SUCCESS,PERSONAL_ID,1234567890,Jean Dupont

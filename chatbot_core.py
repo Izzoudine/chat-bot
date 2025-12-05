@@ -34,7 +34,36 @@ def process_csv_upload(file_path):
             response = requests.post(url, files=files)
 
         if response.status_code == 200:
-            return response.content, "rapport_resultat.zip"
+            # Check if the response is actually a ZIP file
+            content_type = response.headers.get('Content-Type', '')
+            if 'application/zip' in content_type or response.content.startswith(b'PK'):
+                return response.content, "rapport_resultat.zip"
+            else:
+                # The server returns a JSON report when no rows are valid (Total Failure)
+                try:
+                    data = response.json()
+                    
+                    # Handle the specific format from the server (incorrect_data, incorrect_rows)
+                    if 'incorrect_data' in data and isinstance(data['incorrect_data'], list):
+                        count = data.get('incorrect_rows', 0)
+                        total = data.get('total_rows', 0)
+                        
+                        # Extract unique error types for a better summary
+                        error_types = set()
+                        for row in data['incorrect_data']:
+                            if 'errors' in row:
+                                error_types.add(row['errors'])
+                        
+                        error_summary = ", ".join(list(error_types)[:3])
+                        if len(error_types) > 3:
+                            error_summary += ", ..."
+                            
+                        return None, f"Échec de validation : {count}/{total} lignes incorrectes.\nTypes d'erreurs : {error_summary}"
+                    
+                    # Fallback for generic errors
+                    return None, f"Erreur de validation : {json.dumps(data, ensure_ascii=False)}"
+                except:
+                    return None, f"Réponse inattendue du serveur (pas un ZIP) : {response.text[:200]}"
         else:
             return None, f"Erreur {response.status_code}: {response.text}"
     except FileNotFoundError:

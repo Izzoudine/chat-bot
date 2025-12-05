@@ -1,0 +1,54 @@
+# Instructions de Déploiement sur la VM
+
+Voici les étapes pour déployer le chatbot sur votre serveur (VM).
+
+## 1. Fichiers à copier
+Copiez les fichiers et dossiers suivants sur votre VM (par exemple dans un dossier `chatbot-backend`) :
+- `app.py`
+- `chatbot_core.py`
+- `requirements.txt`
+- `data/` (le dossier complet avec la base de connaissances)
+
+## 2. Installation (sur la VM)
+Ouvrez un terminal sur votre VM, allez dans le dossier où vous avez mis les fichiers, et lancez :
+
+```bash
+# (Optionnel) Créer un environnement virtuel pour ne pas polluer le système
+python3 -m venv venv
+source venv/bin/activate
+
+# Installer les dépendances
+pip install -r requirements.txt
+```
+
+## 3. Lancement du serveur
+
+### Option A : Lancement simple (pour tester)
+```bash
+python3 app.py
+```
+*Le serveur s'arrêtera si vous fermez le terminal.*
+
+### Option B : Lancement en arrière-plan (Production)
+Pour que le serveur continue de tourner même après votre déconnexion :
+
+```bash
+nohup python3 app.py > chatbot.log 2>&1 &
+```
+
+## 4. Vérification
+Le serveur écoutera sur le port **5001**.
+Vous pouvez vérifier qu'il tourne avec :
+```bash
+curl http://localhost:5001/health
+```
+Ou voir les logs :
+```bash
+tail -f chatbot.log
+```
+
+## 5. Arrêter le serveur
+Pour arrêter le serveur lancé en arrière-plan :
+```bash
+pkill -f "python3 app.py"
+```
